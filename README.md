@@ -1,0 +1,3 @@
+# treinoRetrofit
+
+Estrutura básica de funcionamento do retrofit comentado. Criado para futuras aplicações usando REST...
