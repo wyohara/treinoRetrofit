@@ -14,6 +14,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/*
+* Classe principal de teste do retrofit 2
+* Bibliografia original: http://www.mobimais.com.br/blog/retrofit-2-consumir-json-no-android/
+*/
 public class Activity_TelaPrincipal extends AppCompatActivity {
 
     private Button botaoEnviar;
@@ -42,7 +46,7 @@ public class Activity_TelaPrincipal extends AppCompatActivity {
 
 
     /**
-     * Chama os listeners para os botões
+     * Iniciando os listeners para os botões
      */
     public void listenersButtons() {
 
@@ -50,39 +54,41 @@ public class Activity_TelaPrincipal extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                //Exibindo a mensagem de envio para o servidor
                 progress = new ProgressDialog(Activity_TelaPrincipal.this);
                 progress.setTitle("enviando...");
                 progress.show();
 
-
-                //pega os valores dos edittextos
+                //Captura dos valores digitados
                 String unidadeE = unidadeEntrada.getText().toString();
                 String unidadeS = unidadeSaida.getText().toString();
                 String valor = valorEntrada.getText().toString();
 
-                //chama o retrofit para fazer a requisição no webservice
+                //chama o retrofit para fazer a requisição no webservice enviado o formulario
                 retrofitConverter(unidadeE, valor, unidadeS);
 
             }
         });
     }
 
-    public void retrofitConverter(String unidadeEnt, String valorEnt, String unidadeSai) {
-        RetrofitService service = ServiceGenerator.createService(RetrofitService.class);
+    //método para envio do formulario via retrofit
+    public void retrofitConverter(String unidadeEnt, String valorEnt, String unidadeSaida) {
+        //Cria inicia o retrofit usando a interface de url criada
+        RetrofitService_URL service = IniciadorRetrofit.createService(RetrofitService_URL.class);
 
-        Call<RespostaServidor> call = service.converterUnidade(unidadeEnt, valorEnt, unidadeSai);
+        //Chama a classe respostaServidor que retorna o objeto de resposta do rest
+        Call<RespostaServidor> call = service.converterUnidade(unidadeEnt, valorEnt, unidadeSaida);
 
         call.enqueue(new Callback<RespostaServidor>() {
             @Override
             public void onResponse(Call<RespostaServidor> call, Response<RespostaServidor> response) {
 
+                //caso a resposta seja um sucesso
                 if (response.isSuccessful()) {
-
                     RespostaServidor respostaServidor = response.body();
 
                     //verifica aqui se o corpo da resposta não é nulo
                     if (respostaServidor != null) {
-
                         if(respostaServidor.isValid()) {
 
                             resposta.setFrom_type(respostaServidor.getFrom_type());
@@ -104,9 +110,10 @@ public class Activity_TelaPrincipal extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(),"Resposta nula do servidor", Toast.LENGTH_SHORT).show();
                     }
 
+                    //Caso não tenha sucesso ao conectar com o servidor
                 } else {
 
-                    Toast.makeText(getApplicationContext(),"Resposta não foi sucesso", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"O servidor não enviou resposta", Toast.LENGTH_SHORT).show();
                     // segura os erros de requisição
                     ResponseBody errorBody = response.errorBody();
                 }
@@ -114,17 +121,17 @@ public class Activity_TelaPrincipal extends AppCompatActivity {
                 progress.dismiss();
             }
 
+            //Em caso de erro de resposta
             @Override
             public void onFailure(Call<RespostaServidor> call, Throwable t) {
-
                 Toast.makeText(getApplicationContext(),"Erro na chamada ao servidor", Toast.LENGTH_SHORT).show();
             }
         });
 
     }
 
+    //Exibindo os valores recebidos
     public void setaValores(){
-
         saidaUnidadeConverter.setText(unidadeEntrada.getText().toString());
         saidaValorConverter.setText(valorEntrada.getText().toString());
         saidaUnidadeConvertida.setText(unidadeSaida.getText().toString());

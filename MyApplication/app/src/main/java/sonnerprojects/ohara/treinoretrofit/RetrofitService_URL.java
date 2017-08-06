@@ -8,9 +8,11 @@ import retrofit2.http.*;
  * Classe que contém a configuração de conexao usando o retrofit
  */
 
-public interface RetrofitService {
+public interface RetrofitService_URL {
+    //Chave de autentificação para usar a api
     @Headers("X-Mashape-Key: AuuyclCPjcmshv2iOPq190OpzLrMp1FJWwejsnJrdfwOUr4h44")
 
+    //criando a requisição por meio de um formulario post
     @FormUrlEncoded
     @POST("convert")
     Call<RespostaServidor> converterUnidade(@Field("from-type") String from_type,
